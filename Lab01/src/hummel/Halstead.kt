@@ -3,7 +3,7 @@ package hummel
 import java.io.File
 import kotlin.math.log2
 
-class Halstead(private var inputPath: String, private var  outputPath: String) {
+class Halstead(private var inputPath: String, private var outputPath: String) {
 	private var operators = hashMapOf(
 		"puts" to 0,
 		"[" to 0,

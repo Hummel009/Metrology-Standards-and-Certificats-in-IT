@@ -11,7 +11,7 @@ import java.io.File
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-fun main() { 
+fun main() {
 	EventQueue.invokeLater {
 		try {
 			for (info in UIManager.getInstalledLookAndFeels()) {
@@ -70,7 +70,7 @@ class GUI : JFrame() {
 		val c1 = mutableListOf<Id>()
 		val t1 = mutableListOf<Id>()
 		id1.forEach {
-			when(it.value) {
+			when (it.value) {
 				ChepinGroups.P -> p1.add(it.key)
 				ChepinGroups.M -> m1.add(it.key)
 				ChepinGroups.C -> c1.add(it.key)
@@ -91,7 +91,7 @@ class GUI : JFrame() {
 		val t2 = mutableListOf<Id>()
 		id2.forEach {
 			if (metrics.pBuffer.contains(it.key)) {
-				when(it.value) {
+				when (it.value) {
 					ChepinGroups.P -> p2.add(it.key)
 					ChepinGroups.M -> m2.add(it.key)
 					ChepinGroups.C -> c2.add(it.key)
