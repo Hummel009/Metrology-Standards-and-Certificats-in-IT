@@ -1,4 +1,4 @@
-﻿package hummel.inter
+package hummel.inter
 
 import hummel.lexer.Lexer
 

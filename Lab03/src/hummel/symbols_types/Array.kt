@@ -1,4 +1,4 @@
-﻿package hummel.symbols_types
+package hummel.symbols_types
 
 import hummel.lexer.Tag
 

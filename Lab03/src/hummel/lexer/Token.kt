@@ -1,4 +1,4 @@
-﻿package hummel.lexer
+package hummel.lexer
 
 open class Token(val tag: Int) {
 	override fun toString(): String {

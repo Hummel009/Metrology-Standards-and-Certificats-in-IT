@@ -1,4 +1,4 @@
-﻿package hummel.inter.statements
+package hummel.inter.statements
 
 class Loop : Statement() {
 	private var state: Statement? = null

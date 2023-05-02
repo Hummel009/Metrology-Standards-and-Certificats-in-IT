@@ -1,4 +1,4 @@
-﻿package hummel.lexer
+package hummel.lexer
 
 open class Word(var str: String, tag: Tag) : Token(tag.code) {
 	override fun toString(): String {

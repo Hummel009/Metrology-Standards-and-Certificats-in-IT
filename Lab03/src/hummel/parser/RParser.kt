@@ -1,4 +1,4 @@
-﻿package hummel.parser
+package hummel.parser
 
 import hummel.Chepin
 import hummel.ChepinGroups

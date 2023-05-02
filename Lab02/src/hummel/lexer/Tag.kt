@@ -1,4 +1,4 @@
-﻿package hummel.lexer
+package hummel.lexer
 
 enum class Tag(val code: Int) {
 	AND(1025),

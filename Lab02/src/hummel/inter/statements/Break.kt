@@ -1,4 +1,4 @@
-﻿package hummel.inter.statements
+package hummel.inter.statements
 
 class Break : Statement() {
 	private var state: Statement? = enclosing

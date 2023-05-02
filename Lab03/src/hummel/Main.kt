@@ -11,7 +11,7 @@ import java.io.File
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
-fun main() {
+fun main() { 
 	EventQueue.invokeLater {
 		try {
 			for (info in UIManager.getInstalledLookAndFeels()) {

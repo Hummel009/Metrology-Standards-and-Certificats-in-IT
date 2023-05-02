@@ -1,4 +1,4 @@
-﻿package hummel.inter.statements
+package hummel.inter.statements
 
 class Sequence(private val state1: Statement, private val state2: Statement) : Statement() {
 	override fun gen(b: Int, a: Int) {

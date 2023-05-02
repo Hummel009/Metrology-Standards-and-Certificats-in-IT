@@ -1,4 +1,4 @@
-﻿package hummel.inter.statements
+package hummel.inter.statements
 
 import hummel.inter.Expression
 import hummel.inter.Id

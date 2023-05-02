@@ -1,4 +1,4 @@
-﻿package hummel.inter.statements
+package hummel.inter.statements
 
 import hummel.inter.boolean.Access
 import hummel.inter.Expression

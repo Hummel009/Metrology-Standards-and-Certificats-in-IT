@@ -1,4 +1,4 @@
-﻿package hummel.lexer
+package hummel.lexer
 
 import hummel.symbols_types.Type
 import java.io.BufferedReader
