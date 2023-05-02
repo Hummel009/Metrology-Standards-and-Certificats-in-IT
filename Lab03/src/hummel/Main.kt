@@ -1,9 +1,13 @@
+package hummel
 
+import hummel.inter.Id
+import hummel.lexer.Lexer
+import hummel.parser.RParser
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.EventQueue
 import java.awt.GridLayout
-import java.math.BigInteger
+import java.io.File
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 
@@ -25,8 +29,6 @@ fun main() {
 }
 
 class GUI : JFrame() {
-	private var mode = SignMode.RUS
-
 	private fun selectPath(pathField: JTextField) {
 		val fileChooser = JFileChooser()
 		val result = fileChooser.showOpenDialog(this)
@@ -35,157 +37,87 @@ class GUI : JFrame() {
 		}
 	}
 
-	private fun error(
-		inputField: JTextField,
-		outputField: JTextField,
-		keyFieldQ: JTextField,
-		keyFieldP: JTextField,
-		keyFieldH: JTextField,
-		keyFieldX: JTextField,
-		keyFieldY: JTextField,
-		keyFieldK: JTextField,
-		keyFieldM: JTextField
-	): Boolean {
-		if (inputField.text.isEmpty() || outputField.text.isEmpty() || keyFieldQ.text.isEmpty() || keyFieldP.text.isEmpty() || keyFieldH.text.isEmpty() || keyFieldK.text.isEmpty() || keyFieldM.text.isEmpty()) {
+	private fun process(inputField: JTextField, outputField: JTextField) {
+		val inputPath = inputField.text
+		val outputPath = outputField.text
+		if (inputPath.isEmpty() || outputPath.isEmpty()) {
 			JOptionPane.showMessageDialog(this, "Empty fields", "Error", JOptionPane.ERROR_MESSAGE)
-			return true
-		}
-		try {
-			val q = keyFieldQ.text.toBigInteger()
-			val p = keyFieldP.text.toBigInteger()
-			val h = keyFieldH.text.toBigInteger()
-			val x = keyFieldX.text.toBigInteger()
-			val k = keyFieldK.text.toBigInteger()
-			keyFieldM.text.toBigInteger()
-			keyFieldY.text.toBigInteger()
-			ValuesChecker.checkQ(q)
-			ValuesChecker.checkP(p, q)
-			ValuesChecker.checkH(q, p, h)
-			ValuesChecker.checkInterval(BigInteger.ZERO, q, x)
-			ValuesChecker.checkInterval(BigInteger.ONE, q - BigInteger.ONE, k)
-		} catch (e: Exception) {
-			JOptionPane.showMessageDialog(this, "Wrong data", "Error", JOptionPane.ERROR_MESSAGE)
-			return true
-		}
-		return false
-	}
-
-	private fun design(
-		inputField: JTextField,
-		outputField: JTextField,
-		keyFieldQ: JTextField,
-		keyFieldP: JTextField,
-		keyFieldH: JTextField,
-		keyFieldX: JTextField,
-		keyFieldY: JTextField,
-		keyFieldK: JTextField,
-		keyFieldM: JTextField
-	) {
-		val error = error(inputField, outputField, keyFieldQ, keyFieldP, keyFieldH, keyFieldX, keyFieldY, keyFieldK, keyFieldM)
-
-		if (keyFieldY.text.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Select Y", "Error", JOptionPane.ERROR_MESSAGE)
 			return
 		}
 
-		if (!error) {
-			val inputPath = inputField.text
-			val outputPath = outputField.text
-			val q = keyFieldQ.text.toBigInteger()
-			val p = keyFieldP.text.toBigInteger()
-			val h = keyFieldH.text.toBigInteger()
-			val y = keyFieldY.text.toBigInteger()
-			val k = keyFieldK.text.toBigInteger()
-			val m = keyFieldM.text.toBigInteger()
+		val metrics = Chepin()
+		val parser = RParser(Lexer(inputPath), metrics)
+		parser.parse(false)
+		val sb = StringBuilder()
 
-			val signer = Signer(inputPath, outputPath, q, p, h, k, m)
-			val cortege = try {
-				signer.design(mode, y)
-			} catch (e: Exception) {
-				null
-			}
+		val span = metrics.getSpans()
+		sb.append("<style>\r\nbody {\r\n\tbackground: #666 \r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\twidth: 100%;\r\n\tmax-width: 800px;\r\n\tmargin: 0 auto;\r\n}\r\nth, td {\r\n\tpadding: 8px;\r\n\ttext-align: left;\r\n\tborder-bottom: 1px solid #ddd;\r\n}\r\nth {\r\n\tbackground-color: #bcbcbc;\r\n}\r\ntd {\r\n\tbackground: White;\r\n}\r\ntr:hover {\r\n\tbackground-color: #f5f5f5;\r\n}\r\n</style>\r\n")
+		sb.append("<table>\n")
+		sb.append("<tr><th>id</th><th>span</th></tr>\n")
+		var sum = 0
+		span.forEach {
+			sb.append("<tr><td>${it.key}</td><td>${it.value}</td></tr>\n")
+			sum += it.value
+		}
+		sb.append("<tr><th>sum</th><th>$sum</th></tr>\n")
+		sb.append("</table>\n<br>\n")
 
-			if (cortege != null) {
-				val hash = cortege.value1
-				val r = cortege.value2
-				val s = cortege.value3
-				val w = cortege.value4
-				val u1 = cortege.value5
-				val u2 = cortege.value6
-				val v = cortege.value7
-				JOptionPane.showMessageDialog(
-					this,
-					"Hash = $hash, R = $r, S = $s, W = $w, U1 = $u1, U2 = $u2, V = $v\r\n${r == v}",
-					"Message",
-					JOptionPane.INFORMATION_MESSAGE
-				)
-				keyFieldX.text = "45"
-				keyFieldY.text = "0"
-			} else {
-				JOptionPane.showMessageDialog(
-					this, "Broken file", "Error", JOptionPane.ERROR_MESSAGE
-				)
+		val id1 = metrics.getIds()
+		sb.append("<table>\n")
+		sb.append("<tr><th>Group</th><th>P</th><th>M</th><th>C</th><th>T</th></tr>\n")
+		val p1 = mutableListOf<Id>()
+		val m1 = mutableListOf<Id>()
+		val c1 = mutableListOf<Id>()
+		val t1 = mutableListOf<Id>()
+		id1.forEach {
+			when(it.value) {
+				ChepinGroups.P -> p1.add(it.key)
+				ChepinGroups.M -> m1.add(it.key)
+				ChepinGroups.C -> c1.add(it.key)
+				else -> t1.add(it.key)
 			}
 		}
-	}
+		sb.append("<tr><td>Ids</td><td>$p1</td><td>$m1</td><td>$c1</td><td>$t1</td></tr>\n")
+		sb.append("<tr><td>Quantity</td><td>${p1.size}</td><td>${m1.size}</td><td>${c1.size}</td><td>${t1.size}</td></tr>\n")
+		sb.append("<tr><th>Q = ${metrics.getQ(false)}</th><th>1 * ${p1.size}</th><th>2 * ${m1.size}</th><th>3 * ${c1.size}</th><th>0.5 * ${t1.size}</th></tr>\n")
+		sb.append("</table>\n<br>\n")
 
-	private fun ensign(
-		inputField: JTextField,
-		outputField: JTextField,
-		keyFieldQ: JTextField,
-		keyFieldP: JTextField,
-		keyFieldH: JTextField,
-		keyFieldX: JTextField,
-		keyFieldY: JTextField,
-		keyFieldK: JTextField,
-		keyFieldM: JTextField
-	) {
-		val error = error(inputField, outputField, keyFieldQ, keyFieldP, keyFieldH, keyFieldX, keyFieldY, keyFieldK, keyFieldM)
-
-		if (keyFieldX.text.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Select X", "Error", JOptionPane.ERROR_MESSAGE)
-			return
-		}
-
-		if (!error) {
-			val inputPath = inputField.text
-			val outputPath = outputField.text
-			val q = keyFieldQ.text.toBigInteger()
-			val p = keyFieldP.text.toBigInteger()
-			val h = keyFieldH.text.toBigInteger()
-			val x = keyFieldX.text.toBigInteger()
-			val k = keyFieldK.text.toBigInteger()
-			val m = keyFieldM.text.toBigInteger()
-
-			val signer = Signer(inputPath, outputPath, q, p, h, k, m)
-			val cortege = try {
-				signer.ensign(mode, x)
-			} catch (e: Exception) {
-				null
-			}
-
-			if (cortege != null) {
-				val hash = cortege.value1
-				val r = cortege.value2
-				val s = cortege.value3
-				val y = cortege.value4
-				JOptionPane.showMessageDialog(
-					this, "Hash = $hash, r = $r, s = $s, y = $y", "Message", JOptionPane.INFORMATION_MESSAGE
-				)
-				keyFieldX.text = "0"
-				keyFieldY.text = "$y"
-			} else {
-				JOptionPane.showMessageDialog(
-					this, "Broken file", "Error", JOptionPane.ERROR_MESSAGE
-				)
+		val id2 = metrics.getIds()
+		sb.append("<table>\n")
+		sb.append("<tr><th>Group</th><th>P</th><th>M</th><th>C</th><th>T</th></tr>\n")
+		val p2 = mutableListOf<Id>()
+		val m2 = mutableListOf<Id>()
+		val c2 = mutableListOf<Id>()
+		val t2 = mutableListOf<Id>()
+		id2.forEach {
+			if (metrics.pBuffer.contains(it.key)) {
+				when(it.value) {
+					ChepinGroups.P -> p2.add(it.key)
+					ChepinGroups.M -> m2.add(it.key)
+					ChepinGroups.C -> c2.add(it.key)
+					else -> t2.add(it.key)
+				}
 			}
 		}
+		sb.append("<tr><td>Ids</td><td>$p2</td><td>$m2</td><td>$c2</td><td>$t2</td></tr>\n")
+		sb.append("<tr><td>Quantity</td><td>${p2.size}</td><td>${m2.size}</td><td>${c2.size}</td><td>${t2.size}</td></tr>\n")
+		sb.append("<tr><th>Q = ${metrics.getQ(true)}</th><th>1 * ${p2.size}</th><th>2 * ${m2.size}</th><th>3 * ${c2.size}</th><th>0.5 * ${t2.size}</th></tr>\n")
+		sb.append("</table>\n<br>\n")
+
+		File(outputPath).writeText(sb.toString())
+
+		JOptionPane.showMessageDialog(
+			this,
+			"Complete",
+			"Message",
+			JOptionPane.INFORMATION_MESSAGE
+		)
 	}
 
 	init {
-		title = "DSA Signer Machine"
+		title = "Chepin Metrics"
 		defaultCloseOperation = EXIT_ON_CLOSE
-		setBounds(100, 100, 550, 250)
+		setBounds(100, 100, 550, 150)
 
 		val contentPanel = JPanel()
 		contentPanel.border = EmptyBorder(5, 5, 5, 5)
@@ -213,126 +145,15 @@ class GUI : JFrame() {
 		outputPanel.add(outputField)
 		outputPanel.add(outputButton)
 
-		val keyPanel1 = JPanel()
-		val keyLabelQ = JLabel("Q:")
-		keyLabelQ.preferredSize = Dimension(15, keyLabelQ.preferredSize.height)
-		val keyFieldQ = JTextField(8)
-		keyFieldQ.text = "107"
-		val keyLabelP = JLabel("P:")
-		keyLabelP.preferredSize = Dimension(15, keyLabelP.preferredSize.height)
-		val keyFieldP = JTextField(8)
-		keyFieldP.text = "643"
-		val keyLabelH = JLabel("H:")
-		keyLabelH.preferredSize = Dimension(15, keyLabelH.preferredSize.height)
-		val keyFieldH = JTextField(8)
-		keyFieldH.text = "2"
-		val keyLabelK = JLabel("K:")
-		keyLabelK.preferredSize = Dimension(15, keyLabelK.preferredSize.height)
-		val keyFieldK = JTextField(8)
-		keyFieldK.text = "31"
-		keyPanel1.add(keyLabelQ)
-		keyPanel1.add(keyFieldQ)
-		keyPanel1.add(keyLabelP)
-		keyPanel1.add(keyFieldP)
-		keyPanel1.add(keyLabelH)
-		keyPanel1.add(keyFieldH)
-		keyPanel1.add(keyLabelK)
-		keyPanel1.add(keyFieldK)
-
-		val keyPanel2 = JPanel()
-		val keyLabelX = JLabel("X:")
-		keyLabelX.preferredSize = Dimension(15, keyLabelX.preferredSize.height)
-		val keyFieldX = JTextField(8)
-		keyFieldX.text = "45"
-		val keyLabelY = JLabel("Y:")
-		keyLabelY.preferredSize = Dimension(15, keyLabelY.preferredSize.height)
-		val keyFieldY = JTextField(8)
-		keyFieldY.text = "0"
-		val keyLabelM = JLabel("M:")
-		keyLabelM.preferredSize = Dimension(15, keyLabelM.preferredSize.height)
-		val keyFieldM = JTextField(8)
-		keyFieldM.text = "323"
-		keyPanel2.add(keyLabelX)
-		keyPanel2.add(keyFieldX)
-		keyPanel2.add(keyLabelY)
-		keyPanel2.add(keyFieldY)
-		keyPanel2.add(keyLabelM)
-		keyPanel2.add(keyFieldM)
-
-		val radioPanel = JPanel()
-		val radioButtonRus = JRadioButton("RUS")
-		val radioButtonEng = JRadioButton("ENG")
-		val radioButtonAsc = JRadioButton("ASC")
-		val radioButtonBin = JRadioButton("BIN")
-		radioButtonRus.isSelected = true
-
-		radioButtonRus.addActionListener {
-			mode = SignMode.RUS
-			radioButtonEng.isSelected = false
-			radioButtonAsc.isSelected = false
-			radioButtonBin.isSelected = false
-		}
-		radioButtonEng.addActionListener {
-			mode = SignMode.ENG
-			radioButtonRus.isSelected = false
-			radioButtonAsc.isSelected = false
-			radioButtonBin.isSelected = false
-		}
-		radioButtonAsc.addActionListener {
-			mode = SignMode.ASC
-			radioButtonRus.isSelected = false
-			radioButtonEng.isSelected = false
-			radioButtonBin.isSelected = false
-		}
-		radioButtonBin.addActionListener {
-			mode = SignMode.BIN
-			radioButtonRus.isSelected = false
-			radioButtonAsc.isSelected = false
-			radioButtonEng.isSelected = false
-		}
-
-		radioPanel.add(radioButtonRus)
-		radioPanel.add(radioButtonEng)
-		radioPanel.add(radioButtonAsc)
-		radioPanel.add(radioButtonBin)
-
-		val processPanel = JPanel()
-		val processEnsign = JButton("Ensign")
-		val processDesign = JButton("Design")
-		processEnsign.addActionListener {
-			ensign(inputField, outputField, keyFieldQ, keyFieldP, keyFieldH, keyFieldX, keyFieldY, keyFieldK, keyFieldM)
-		}
-		processDesign.addActionListener {
-			design(inputField, outputField, keyFieldQ, keyFieldP, keyFieldH, keyFieldX, keyFieldY, keyFieldK, keyFieldM)
-		}
-		processPanel.add(processEnsign)
-		processPanel.add(processDesign)
+		val buttonPanel = JPanel()
+		val buttonProcess = JButton("Process")
+		buttonProcess.addActionListener { process(inputField, outputField) }
+		buttonPanel.add(buttonProcess)
 
 		contentPanel.add(inputPanel)
 		contentPanel.add(outputPanel)
-		contentPanel.add(keyPanel1)
-		contentPanel.add(keyPanel2)
-		contentPanel.add(radioPanel)
-		contentPanel.add(processPanel)
+		contentPanel.add(buttonPanel)
 
 		setLocationRelativeTo(null)
 	}
 }
-
-enum class SignMode {
-	RUS, ENG, ASC, BIN
-}
-
-data class CortegeFour(
-	val value1: Any, val value2: Any, val value3: Any, val value4: Any
-)
-
-data class CortegeSeven(
-	val value1: Any,
-	val value2: Any,
-	val value3: Any,
-	val value4: Any,
-	val value5: Any,
-	val value6: Any,
-	val value7: Any
-)
