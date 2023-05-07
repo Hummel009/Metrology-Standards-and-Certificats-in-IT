@@ -1,2 +1,4 @@
 .metadata
 .sonarlint
+**/bin
+**/workspace.xml
