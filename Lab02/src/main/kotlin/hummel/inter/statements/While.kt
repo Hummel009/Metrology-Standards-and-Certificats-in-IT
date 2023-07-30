@@ -10,8 +10,8 @@ class While : Statement() {
 	fun init(expr: Expression, state: Statement) {
 		this.expr = expr
 		this.state = state
-		if (this.expr!!.type !== Type.BOOLEAN) {
-			this.expr!!.error("boolean required in while expression")
+		if ((this.expr ?: return).type !== Type.BOOLEAN) {
+			(this.expr ?: return).error("boolean required in while expression")
 		}
 	}
 

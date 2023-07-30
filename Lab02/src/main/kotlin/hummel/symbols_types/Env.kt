@@ -7,7 +7,7 @@ import java.util.*
 
 open class Env(env: Env?) {
 	private val table = Hashtable<Token, Id>()
-	protected var prev: Env? = env
+	private var prev: Env? = env
 
 	fun put(token: Token, id: Id) {
 		table[token] = id

@@ -4,7 +4,6 @@ enum class Tag(val code: Int) {
 	AND(1025),
 	BASIC(1026),
 	BREAK(1027),
-	DO(1028),
 	ELSE(1029),
 	EQUAL(1030),
 	FALSE(1031),

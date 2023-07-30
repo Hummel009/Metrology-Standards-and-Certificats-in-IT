@@ -14,7 +14,7 @@ import hummel.symbols_types.Env
 import hummel.symbols_types.Type
 
 
-class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
+class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 	private var look: Token? = null
 	private var top: Env? = null
 	private var used = 0
@@ -94,7 +94,7 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 		val s1: Statement?
 		val s2: Statement
 		val savedStatement: Statement
-		return when (look!!.tag) {
+		return when ((look ?: return null).tag) {
 			Tag.OPERATOR_END.code -> {
 				move()
 				Statement.NULL
@@ -104,20 +104,20 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				match(Tag.CASE.code)
 				x = pExpr()
 				match(Tag.OPERATOR_END.code)
-				val casenode = Case(x!!, null)
+				val casenode = Case(x ?: return null, null)
 
 				jilbe.savedNest.push(jilbe.nest)
-				while (look!!.tag == Tag.WHEN.code) {
+				while ((look ?: return null).tag == Tag.WHEN.code) {
 					jilbe.nest++
 					jilbe.checkMax(jilbe.nest)
-					jilbe.operatorAmount++;
-					jilbe.conditionAmount++;
+					jilbe.operatorAmount++
+					jilbe.conditionAmount++
 					s = whens()
-					casenode.add(s!!)
+					casenode.add(s ?: return null)
 				}
 				jilbe.nest = jilbe.savedNest.pop()
 
-				if (look!!.tag != Tag.ELSE.code) {
+				if ((look ?: return null).tag != Tag.ELSE.code) {
 					match(Tag.END.code)
 					match(Tag.OPERATOR_END.code)
 					return casenode
@@ -146,15 +146,15 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				s1 = blockWithoutEnd()
 				jilbe.nest = jilbe.savedNest.pop()
 
-				jilbe.operatorAmount++;
-				jilbe.conditionAmount++;
+				jilbe.operatorAmount++
+				jilbe.conditionAmount++
 
-				if (look!!.tag != Tag.ELSE.code) {
+				if ((look ?: return null).tag != Tag.ELSE.code) {
 					match(Tag.END.code)
-					return If(x!!, s1)
+					return If(x ?: return null, s1)
 				}
 				match(Tag.ELSE.code)
-				if (look!!.tag != Tag.IF.code) {
+				if ((look ?: return null).tag != Tag.IF.code) {
 					match(Tag.OPERATOR_END.code)
 				}
 
@@ -164,7 +164,7 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				s2 = blockWithEnd()
 				jilbe.nest = jilbe.savedNest.pop()
 
-				Else(x!!, s1, s2)
+				Else(x ?: return null, s1, s2)
 			}
 
 			Tag.WHILE.code -> {
@@ -182,10 +182,10 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				s1 = pStatement()
 				jilbe.nest = jilbe.savedNest.pop()
 
-				whilenode.init(x!!, s1!!)
+				whilenode.init(x ?: return null, s1 ?: return null)
 				Statement.enclosing = savedStatement
-				jilbe.operatorAmount++;
-				jilbe.conditionAmount++;
+				jilbe.operatorAmount++
+				jilbe.conditionAmount++
 				whilenode
 			}
 
@@ -197,9 +197,9 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				x = pBool()
 				match(')'.code)
 				s1 = pStatement()
-				untilnode.init(x!!, s1!!)
-				jilbe.operatorAmount++;
-				jilbe.conditionAmount++;
+				untilnode.init(x ?: return null, s1 ?: return null)
+				jilbe.operatorAmount++
+				jilbe.conditionAmount++
 				untilnode
 			}
 
@@ -209,7 +209,7 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				Statement.enclosing = loopnode
 				match(Tag.LOOP.code)
 				s = pStatement()
-				loopnode.init(s!!)
+				loopnode.init(s ?: return null)
 				Statement.enclosing = savedStatement
 				loopnode
 			}
@@ -226,9 +226,9 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 				do {
 					str.append(look.toString())
 					move()
-				} while (look!!.tag != Tag.OPERATOR_END.code)
+				} while ((look ?: return null).tag != Tag.OPERATOR_END.code)
 				match(Tag.OPERATOR_END.code)
-				jilbe.operatorAmount++;
+				jilbe.operatorAmount++
 				Puts(null, str.toString())
 			}
 
@@ -248,12 +248,12 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 	private fun whens(): Statement? {
 		val s: Statement
 		val x: Expression?
-		if (look!!.tag == Tag.WHEN.code) {
+		if ((look ?: return null).tag == Tag.WHEN.code) {
 			move()
 			x = pExpr()
 			match(Tag.OPERATOR_END.code)
 			s = whenStatements()
-			return When(x!!, s)
+			return When(x ?: return null, s)
 		}
 		error("Case error: 'when' undefined")
 		return null
@@ -263,20 +263,20 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 		val statement: Statement
 		val t = look
 		match(Tag.ID.code)
-		val id = top!!.get(t)
-		if (look!!.tag == '='.code) {
+		val id = (top ?: return null).get(t)
+		if ((look ?: return null).tag == '='.code) {
 			move()
 			val ex = pBool()
 			if (id == null) {
-				val type = ex!!.type
-				val newId = Id((t as Word?)!!, type)
-				top!!.put(t!!, newId)
-				used += type!!.width
+				val type = (ex ?: return null).type
+				val newId = Id((t as Word?) ?: return null, type)
+				(top ?: return null).put(t ?: return null, newId)
+				used += (type ?: return null).width
 				statement = Set(newId, ex)
 			} else {
-				statement = Set(id, ex!!)
+				statement = Set(id, ex ?: return null)
 			}
-			jilbe.operatorAmount++;
+			jilbe.operatorAmount++
 			match(Tag.OPERATOR_END.code)
 			return statement
 		}
@@ -286,41 +286,41 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 
 	private fun pBool(): Expression? {
 		var x = join()
-		while (look!!.tag == Tag.OR.code) {
+		while ((look ?: return null).tag == Tag.OR.code) {
 			val token = look
 			move()
-			x = Or(token!!, x!!, join()!!)
+			x = Or(token ?: return null, x ?: return null, join() ?: return null)
 		}
 		return x
 	}
 
 	private fun join(): Expression? {
 		var x = equality()
-		while (look!!.tag == Tag.AND.code) {
+		while ((look ?: return null).tag == Tag.AND.code) {
 			val token = look
 			move()
-			x = And(token!!, x!!, equality()!!)
+			x = And(token ?: return null, x ?: return null, equality() ?: return null)
 		}
 		return x
 	}
 
 	private fun equality(): Expression? {
 		var x = pRel()
-		while (look!!.tag == Tag.EQUAL.code || look!!.tag == Tag.NOT_EQUAL.code) {
+		while ((look ?: return null).tag == Tag.EQUAL.code || (look ?: return null).tag == Tag.NOT_EQUAL.code) {
 			val token = look
 			move()
-			x = Rel(token!!, x!!, pRel()!!)
+			x = Rel(token ?: return null, x ?: return null, pRel() ?: return null)
 		}
 		return x
 	}
 
 	private fun pRel(): Expression? {
 		val x = pExpr()
-		return when (look!!.tag) {
+		return when ((look ?: return null).tag) {
 			'<'.code, Tag.LOWER_EQUAL.code, Tag.GREAT_EQUAL.code, '>'.code -> {
 				val token = look
 				move()
-				Rel(token!!, x!!, pExpr()!!)
+				Rel(token ?: return null, x ?: return null, pExpr() ?: return null)
 			}
 
 			else -> x
@@ -329,35 +329,35 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 
 	private fun pExpr(): Expression? {
 		var x = pTerm()
-		while (look!!.tag == '+'.code || look!!.tag == '-'.code) {
+		while ((look ?: return null).tag == '+'.code || (look ?: return null).tag == '-'.code) {
 			val token = look
 			move()
-			x = Arithmetic(token!!, x!!, pTerm()!!)
+			x = Arithmetic(token ?: return null, x ?: return null, pTerm() ?: return null)
 		}
 		return x
 	}
 
 	private fun pTerm(): Expression? {
 		var x = pUnary()
-		while (look!!.tag == '*'.code || look!!.tag == '/'.code) {
+		while ((look ?: return null).tag == '*'.code || (look ?: return null).tag == '/'.code) {
 			val token = look
 			move()
-			x = Arithmetic(token!!, x!!, pUnary()!!)
+			x = Arithmetic(token ?: return null, x ?: return null, pUnary() ?: return null)
 		}
 		return x
 	}
 
 	private fun pUnary(): Expression? {
-		return when (look!!.tag) {
+		return when ((look ?: return null).tag) {
 			'-'.code -> {
 				move()
-				Unary(Word.MINUS, pUnary()!!)
+				Unary(Word.MINUS, pUnary() ?: return null)
 			}
 
 			'!'.code, Tag.NOT.code -> {
 				val token = look
 				move()
-				Not(token!!, pUnary()!!)
+				Not(token ?: return null, pUnary() ?: return null)
 			}
 
 			else -> factor()
@@ -366,7 +366,7 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 
 	private fun factor(): Expression? {
 		val x: Expression?
-		when (look!!.tag) {
+		when ((look ?: return null).tag) {
 			'('.code -> {
 				move()
 				x = pBool()
@@ -375,13 +375,13 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 			}
 
 			Tag.NUM.code -> {
-				x = Constant(look!!, Type.INT)
+				x = Constant(look ?: return null, Type.INT)
 				move()
 				return x
 			}
 
 			Tag.FLOAT.code -> {
-				x = Constant(look!!, Type.FLOAT)
+				x = Constant(look ?: return null, Type.FLOAT)
 				move()
 				return x
 			}
@@ -400,12 +400,12 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 
 			Tag.ID.code -> {
 				run {
-					val id = top!!.get(look)
+					val id = (top ?: return@run).get(look)
 					if (id == null) {
 						error(look.toString() + " undeclared")
 					} else {
 						move()
-						return if (look!!.tag != '['.code) id else offset(id)
+						return if ((look ?: return@run).tag != '['.code) id else offset(id)
 					}
 				}
 				run { error("syntax error") }
@@ -431,14 +431,14 @@ class RParser(private val lexer: Lexer, val jilbe: Jilbe) {
 		if (type != null) {
 			type = (type as Array).type
 			w = Constant(type.width)
-			t1 = Arithmetic(Token('*'.code), i!!, w)
+			t1 = Arithmetic(Token('*'.code), i ?: return null, w)
 			loc = t1
-			while (look!!.tag == '['.code) {
+			while ((look ?: return null).tag == '['.code) {
 				match('['.code)
 				i = pBool() //index
 				match(']'.code)
 				w = Constant(type.width)
-				t1 = Arithmetic(Token('*'.code), i!!, w)
+				t1 = Arithmetic(Token('*'.code), i ?: return null, w)
 				t2 = Arithmetic(Token('+'.code), loc, t1)
 				loc = t2
 			}

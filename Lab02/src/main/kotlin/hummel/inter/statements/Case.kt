@@ -21,7 +21,7 @@ class Case(var expr: Expression, var state: Statement?) : Statement() {
 			nextlabel = (whens[0] as When).nextL
 			emitLabel(nextlabel)
 			emit("ELSE NOT goto L$a")
-			state!!.gen(0, a)
+			(state ?: return).gen(0, a)
 		} else {
 			(whens[0] as When).gen2(0, nextlabel, a)
 		}
