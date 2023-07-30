@@ -51,7 +51,7 @@ class Chepin {
 	fun setIndex(id: Id, ind: ChepinGroups) {
 		if (ind == ChepinGroups.P && pBuffer.contains(id)) {
 			ids[id] = ChepinGroups.P
-		} else if (!ids.containsKey(id) || ind > ids[id]!!) {
+		} else if (!ids.containsKey(id) || ind > (ids[id] ?: return)) {
 			ids[id] = ind
 		}
 
@@ -59,7 +59,7 @@ class Chepin {
 	}
 
 	private fun incSpan(id: Id) {
-		if (span.containsKey(id)) span[id] = span[id]!! + 1 else span[id] = 0
+		if (span.containsKey(id)) span[id] = (span[id] ?: return) + 1 else span[id] = 0
 	}
 
 	fun getIds(): Iterable<Map.Entry<Id, ChepinGroups>> {

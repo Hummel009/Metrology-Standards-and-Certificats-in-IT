@@ -5,6 +5,7 @@ import hummel.ChepinGroups
 import hummel.inter.*
 import hummel.inter.boolean.*
 import hummel.inter.statements.*
+import hummel.inter.statements.Set
 import hummel.lexer.Lexer
 import hummel.lexer.Tag
 import hummel.lexer.Token
@@ -94,7 +95,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		val s1: Statement?
 		val s2: Statement
 		val savedStatement: Statement
-		return when (look!!.tag) {
+		return when ((look ?: return null).tag) {
 			Tag.OPERATOR_END.code -> {
 				move()
 				Statement.NULL
@@ -104,14 +105,14 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 				match(Tag.CASE.code)
 				x = pExpr()
 				match(Tag.OPERATOR_END.code)
-				val casenode = Case(x!!, null)
+				val casenode = Case(x ?: return null, null)
 
-				while (look!!.tag == Tag.WHEN.code) {
+				while ((look ?: return null).tag == Tag.WHEN.code) {
 					s = whens()
-					casenode.add(s!!)
+					casenode.add(s ?: return null)
 				}
 
-				if (look!!.tag != Tag.ELSE.code) {
+				if ((look ?: return null).tag != Tag.ELSE.code) {
 					match(Tag.END.code)
 					match(Tag.OPERATOR_END.code)
 					return casenode
@@ -137,18 +138,18 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 
 				s1 = blockWithoutEnd()
 
-				if (look!!.tag != Tag.ELSE.code) {
+				if ((look ?: return null).tag != Tag.ELSE.code) {
 					match(Tag.END.code)
-					return If(x!!, s1)
+					return If(x ?: return null, s1)
 				}
 				match(Tag.ELSE.code)
-				if (look!!.tag != Tag.IF.code) {
+				if ((look ?: return null).tag != Tag.IF.code) {
 					match(Tag.OPERATOR_END.code)
 				}
 
 				s2 = blockWithEnd()
 
-				Else(x!!, s1, s2)
+				Else(x ?: return null, s1, s2)
 			}
 
 			Tag.WHILE.code -> {
@@ -163,7 +164,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 
 				s1 = pStatement()
 
-				whilenode.init(x!!, s1!!)
+				whilenode.init(x ?: return null, s1!!)
 				Statement.enclosing = savedStatement
 				whilenode
 			}
@@ -177,7 +178,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 				x = pBool()
 				match(')'.code)
 				s1 = pStatement()
-				untilnode.init(x!!, s1!!)
+				untilnode.init(x ?: return null, s1!!)
 				untilnode
 			}
 
@@ -187,7 +188,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 				Statement.enclosing = loopnode
 				match(Tag.LOOP.code)
 				s = pStatement()
-				loopnode.init(s!!)
+				loopnode.init(s ?: return null)
 				Statement.enclosing = savedStatement
 				loopnode
 			}
@@ -206,12 +207,12 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 					val ex = pExpr()
 					metrics.isP = false
 					Gets(ex, "")
-				} catch(e: Exception) {
+				} catch (e: Exception) {
 					val str = StringBuilder()
 					do {
 						str.append(look.toString())
 						move()
-					} while (look!!.tag != Tag.OPERATOR_END.code)
+					} while ((look ?: return null).tag != Tag.OPERATOR_END.code)
 					match(Tag.OPERATOR_END.code)
 					Gets(null, str.toString())
 				}
@@ -225,7 +226,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 					val ex = pExpr()
 					metrics.isP = false
 					Puts(ex, "")
-				} catch(e: Exception) {
+				} catch (e: Exception) {
 					val str = StringBuilder()
 					do {
 						str.append(look.toString())
@@ -253,12 +254,12 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 	private fun whens(): Statement? {
 		val s: Statement
 		val x: Expression?
-		if (look!!.tag == Tag.WHEN.code) {
+		if ((look ?: return null).tag == Tag.WHEN.code) {
 			move()
 			x = pExpr()
 			match(Tag.OPERATOR_END.code)
 			s = whenStatements()
-			return When(x!!, s)
+			return When(x ?: return null, s)
 		}
 		error("Case error: 'when' undefined")
 		return null
@@ -286,7 +287,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 				metrics.isP = false
 			} else {
 				metrics.setIndex(id, temp)
-				statement = Set(id, ex!!)
+				statement = Set(id, ex ?: return null)
 			}
 			match(Tag.OPERATOR_END.code)
 			return statement
@@ -300,7 +301,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		while (look!!.tag == Tag.OR.code) {
 			val token = look
 			move()
-			x = Or(token!!, x!!, join()!!)
+			x = Or(token!!, x ?: return null, join()!!)
 		}
 		return x
 	}
@@ -310,7 +311,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		while (look!!.tag == Tag.AND.code) {
 			val token = look
 			move()
-			x = And(token!!, x!!, equality()!!)
+			x = And(token!!, x ?: return null, equality()!!)
 		}
 		return x
 	}
@@ -320,7 +321,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		while (look!!.tag == Tag.EQUAL.code || look!!.tag == Tag.NOT_EQUAL.code) {
 			val token = look
 			move()
-			x = Rel(token!!, x!!, pRel()!!)
+			x = Rel(token!!, x ?: return null, pRel()!!)
 		}
 		return x
 	}
@@ -331,7 +332,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 			'<'.code, Tag.LOWER_EQUAL.code, Tag.GREAT_EQUAL.code, '>'.code -> {
 				val token = look
 				move()
-				Rel(token!!, x!!, pExpr()!!)
+				Rel(token!!, x ?: return null, pExpr()!!)
 			}
 
 			else -> x
@@ -343,32 +344,32 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		while (look!!.tag == '+'.code || look!!.tag == '-'.code) {
 			val token = look
 			move()
-			x = Arithmetic(token!!, x!!, pTerm()!!)
+			x = Arithmetic(token!!, x ?: return null, pTerm()!!)
 		}
 		return x
 	}
 
 	private fun pTerm(): Expression? {
 		var x = pUnary()
-		while (look!!.tag == '*'.code || look!!.tag == '/'.code) {
+		while ((look ?: return null).tag == '*'.code || look!!.tag == '/'.code) {
 			val token = look
 			move()
-			x = Arithmetic(token!!, x!!, pUnary()!!)
+			x = Arithmetic(token ?: return null, x ?: return null, pUnary() ?: return null)
 		}
 		return x
 	}
 
 	private fun pUnary(): Expression? {
-		return when (look!!.tag) {
+		return when ((look ?: return null).tag) {
 			'-'.code -> {
 				move()
-				Unary(Word.MINUS, pUnary()!!)
+				Unary(Word.MINUS, pUnary() ?: return null)
 			}
 
 			'!'.code, Tag.NOT.code -> {
 				val token = look
 				move()
-				Not(token!!, pUnary()!!)
+				Not(token ?: return null, pUnary() ?: return null)
 			}
 
 			else -> factor()
@@ -377,7 +378,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 
 	private fun factor(): Expression? {
 		val x: Expression?
-		when (look!!.tag) {
+		when ((look ?: return null).tag) {
 			'('.code -> {
 				move()
 				x = pBool()
@@ -386,13 +387,13 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 			}
 
 			Tag.NUM.code -> {
-				x = Constant(look!!, Type.INT)
+				x = Constant(look ?: return null, Type.INT)
 				move()
 				return x
 			}
 
 			Tag.FLOAT.code -> {
-				x = Constant(look!!, Type.FLOAT)
+				x = Constant(look ?: return null, Type.FLOAT)
 				move()
 				return x
 			}
@@ -410,7 +411,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 			}
 
 			Tag.GETS.code -> {
-				x = Constant(look!!, Type.INT)
+				x = Constant(look ?: return null, Type.INT)
 				metrics.isP = true
 				move()
 				return x
@@ -418,17 +419,16 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 
 			Tag.ID.code -> {
 				run {
-					val id = top!!.get(look)
+					val id = (top ?: return@run).get(look)
 					if (id == null) {
 						error(look.toString() + " undeclared")
 					} else {
 						move()
-						return if (look!!.tag != '['.code) {
+						return if ((look ?: return@run).tag != '['.code) {
 							metrics.setIndex(id, metrics.groupTag)
 							metrics.tryAddToPBuffer(id)
 							id
-						} else
-							offset(id)
+						} else offset(id)
 					}
 				}
 				run { error("syntax error") }
@@ -454,14 +454,14 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		if (type != null) {
 			type = (type as Array).type
 			w = Constant(type.width)
-			t1 = Arithmetic(Token('*'.code), i!!, w)
+			t1 = Arithmetic(Token('*'.code), i ?: return null, w)
 			loc = t1
-			while (look!!.tag == '['.code) {
+			while ((look ?: return null).tag == '['.code) {
 				match('['.code)
 				i = pBool() //index
 				match(']'.code)
 				w = Constant(type.width)
-				t1 = Arithmetic(Token('*'.code), i!!, w)
+				t1 = Arithmetic(Token('*'.code), i ?: return null, w)
 				t2 = Arithmetic(Token('+'.code), loc, t1)
 				loc = t2
 			}
