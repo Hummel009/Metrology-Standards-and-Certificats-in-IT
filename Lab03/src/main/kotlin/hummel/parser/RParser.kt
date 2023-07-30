@@ -351,7 +351,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 
 	private fun pTerm(): Expression? {
 		var x = pUnary()
-		while ((look ?: return null).tag == '*'.code || look!!.tag == '/'.code) {
+		while ((look ?: return null).tag == '*'.code || (look ?: return null).tag == '/'.code) {
 			val token = look
 			move()
 			x = Arithmetic(token ?: return null, x ?: return null, pUnary() ?: return null)
