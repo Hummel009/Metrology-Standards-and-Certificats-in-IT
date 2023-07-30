@@ -79,7 +79,7 @@ class GUI : JFrame() {
 		}
 		sb.append("<tr><td>Ids</td><td>$p1</td><td>$m1</td><td>$c1</td><td>$t1</td></tr>\n")
 		sb.append("<tr><td>Quantity</td><td>${p1.size}</td><td>${m1.size}</td><td>${c1.size}</td><td>${t1.size}</td></tr>\n")
-		sb.append("<tr><th>Q = ${metrics.getQ(false)}</th><th>1 * ${p1.size}</th><th>2 * ${m1.size}</th><th>3 * ${c1.size}</th><th>0.5 * ${t1.size}</th></tr>\n")
+		sb.append("<tr><th>Q = ${metrics.getQ()}</th><th>1 * ${p1.size}</th><th>2 * ${m1.size}</th><th>3 * ${c1.size}</th><th>0.5 * ${t1.size}</th></tr>\n")
 		sb.append("</table>\n<br>\n")
 
 		val id2 = metrics.getIds()
