@@ -23,5 +23,5 @@ kotlin {
 }
 
 application {
-	mainClassName = 'MainKt'
+	mainClassName = 'hummel.MainKt'
 }
