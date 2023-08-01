@@ -3,7 +3,7 @@ package hummel.inter.statements
 import hummel.inter.Expression
 
 class When(var expr: Expression, private val state: Statement) : Statement() {
-	var nextL = 0
+	var nextL: Int = 0
 
 	override fun gen(b: Int, a: Int) {
 		emitLabel(a)

@@ -17,7 +17,7 @@ class Constant(token: Token, type: Type?) : Expression(token, type) {
 	}
 
 	companion object {
-		var TRUE = Constant(Word.TRUE, Type.BOOLEAN)
-		var FALSE = Constant(Word.FALSE, Type.BOOLEAN)
+		var TRUE: Constant = Constant(Word.TRUE, Type.BOOLEAN)
+		var FALSE: Constant = Constant(Word.FALSE, Type.BOOLEAN)
 	}
 }
