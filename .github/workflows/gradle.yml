@@ -17,10 +17,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-
+  build1:
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 8
@@ -28,15 +26,32 @@ jobs:
       with:
         java-version: '8'
         distribution: 'temurin'
-        
     - name: Build with Gradle
       working-directory: ./Lab01
       run: ./gradlew.bat build
-        
+
+  build2:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
     - name: Build with Gradle
       working-directory: ./Lab02
       run: ./gradlew.bat build
-        
+
+  build3:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 8
+      uses: actions/setup-java@v3
+      with:
+        java-version: '8'
+        distribution: 'temurin'
     - name: Build with Gradle
       working-directory: ./Lab03
       run: ./gradlew.bat build
