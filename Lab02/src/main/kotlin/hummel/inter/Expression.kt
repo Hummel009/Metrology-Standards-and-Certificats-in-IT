@@ -4,17 +4,11 @@ import hummel.lexer.Token
 import hummel.symbols_types.Type
 
 open class Expression(var token: Token, var type: Type?) : Node() {
-	open fun gen(): Expression {
-		return this
-	}
+	open fun gen(): Expression = this
 
-	open fun reduce(): Expression {
-		return this
-	}
+	open fun reduce(): Expression = this
 
-	open fun jumping(t: Int, f: Int) {
-		emitJumps(this.toString(), t, f)
-	}
+	open fun jumping(t: Int, f: Int): Unit = emitJumps(this.toString(), t, f)
 
 	fun emitJumps(test: String, t: Int, f: Int) {
 		if (t != 0 && f != 0) {
@@ -27,7 +21,5 @@ open class Expression(var token: Token, var type: Type?) : Node() {
 		}
 	}
 
-	override fun toString(): String {
-		return token.toString()
-	}
+	override fun toString(): String = token.toString()
 }

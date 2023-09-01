@@ -13,12 +13,8 @@ open class Logical(token: Token, var expr1: Expression, var expr2: Expression) :
 		}
 	}
 
-	open fun check(t1: Type?, t2: Type?): Type? {
-		return if (t1 == Type.BOOLEAN && t2 == Type.BOOLEAN) {
-			Type.BOOLEAN
-		} else {
-			null
-		}
+	private fun check(t1: Type?, t2: Type?): Type? {
+		return if (t1 == Type.BOOLEAN && t2 == Type.BOOLEAN) Type.BOOLEAN else null
 	}
 
 	override fun gen(): Expression {
@@ -34,7 +30,5 @@ open class Logical(token: Token, var expr1: Expression, var expr2: Expression) :
 		return temp
 	}
 
-	override fun toString(): String {
-		return "$expr1 $token $expr2"
-	}
+	override fun toString(): String = "$expr1 $token $expr2"
 }

@@ -5,9 +5,7 @@ import hummel.inter.Expression
 class Case(var expr: Expression, var state: Statement?) : Statement() {
 	private var whens: MutableList<Statement> = ArrayList()
 
-	fun add(state: Statement) {
-		whens.add(state)
-	}
+	fun add(state: Statement): Boolean = whens.add(state)
 
 	override fun gen(b: Int, a: Int) {
 		emit("CASE $expr")

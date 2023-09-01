@@ -10,9 +10,7 @@ class Temp(type: Type?) : Expression(Word.TEMP, type) {
 		number = ++count
 	}
 
-	override fun toString(): String {
-		return "t$number"
-	}
+	override fun toString(): String = "t$number"
 
 	companion object {
 		private var count = 0

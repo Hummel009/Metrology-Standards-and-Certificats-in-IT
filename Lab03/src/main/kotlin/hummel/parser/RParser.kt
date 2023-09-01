@@ -32,9 +32,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		throw Exception("Near line " + Lexer.line + " " + look + ": " + msg)
 	}
 
-	private fun match(t: Int) {
-		if (look?.tag == t) move() else error("syntax error")
-	}
+	private fun match(t: Int) = if (look?.tag == t) move() else error("syntax error")
 
 	fun parse(print: Boolean) {
 		val s = block()
@@ -59,9 +57,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		return s
 	}
 
-	private fun isEndOfBlock(): Boolean {
-		return look!!.tag == Tag.END.code || look!!.tag == Tag.ELSE.code
-	}
+	private fun isEndOfBlock(): Boolean = look!!.tag == Tag.END.code || look!!.tag == Tag.ELSE.code
 
 	private fun blockWithEnd(): Statement {
 		val savedEnv = top

@@ -9,21 +9,13 @@ open class Node {
 		lexerLine = Lexer.line
 	}
 
-	fun error(s: String) {
-		println("Error near line $lexerLine: $s")
-	}
+	fun error(s: String): Unit = println("Error near line $lexerLine: $s")
 
-	fun newLabel(): Int {
-		return ++labels
-	}
+	fun newLabel(): Int = ++labels
 
-	fun emitLabel(i: Int) {
-		println("L$i:")
-	}
+	fun emitLabel(i: Int): Unit = println("L$i:")
 
-	fun emit(codeline: String) {
-		println("\t" + codeline)
-	}
+	fun emit(codeline: String): Unit = println("\t" + codeline)
 
 	companion object {
 		private var labels = 0

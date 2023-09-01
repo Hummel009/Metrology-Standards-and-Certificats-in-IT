@@ -9,9 +9,7 @@ class Jilbe {
 	var operatorAmount: Int = 0
 	var conditionAmount: Int = 0
 
-	fun getMaxNest(): Int {
-		return maxNest - 1
-	}
+	fun getMaxNest(): Int = maxNest - 1
 
 	fun checkMax(n: Int) {
 		if (maxNest < n) {

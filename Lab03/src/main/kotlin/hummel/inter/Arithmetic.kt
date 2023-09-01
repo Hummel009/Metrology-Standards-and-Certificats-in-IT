@@ -11,11 +11,7 @@ class Arithmetic(token: Token, private var expr1: Expression, private var expr2:
 		}
 	}
 
-	override fun gen(): Expression {
-		return Arithmetic(token, expr1.reduce(), expr2.reduce())
-	}
+	override fun gen(): Expression = Arithmetic(token, expr1.reduce(), expr2.reduce())
 
-	override fun toString(): String {
-		return "$expr1 $token $expr2"
-	}
+	override fun toString(): String = "$expr1 $token $expr2"
 }

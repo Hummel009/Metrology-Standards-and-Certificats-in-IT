@@ -21,7 +21,5 @@ class Set(private var id: Id, var expr: Expression) : Statement() {
 		}
 	}
 
-	override fun gen(b: Int, a: Int) {
-		emit(id.toString() + " = " + expr.gen().toString())
-	}
+	override fun gen(b: Int, a: Int): Unit = emit(id.toString() + " = " + expr.gen().toString())
 }

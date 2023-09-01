@@ -62,11 +62,7 @@ class Chepin {
 		if (span.containsKey(id)) span[id] = (span[id] ?: return) + 1 else span[id] = 0
 	}
 
-	fun getIds(): Iterable<Map.Entry<Id, ChepinGroups>> {
-		return ids.entries
-	}
+	fun getIds(): Iterable<Map.Entry<Id, ChepinGroups>> = ids.entries
 
-	fun getSpans(): Iterable<Map.Entry<Id, Int>> {
-		return span.entries
-	}
+	fun getSpans(): Iterable<Map.Entry<Id, Int>> = span.entries
 }
