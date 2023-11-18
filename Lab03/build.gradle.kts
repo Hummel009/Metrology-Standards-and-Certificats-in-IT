@@ -17,6 +17,10 @@ val embed: Configuration by configurations.creating
 
 dependencies {
 	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.20")
+	embed("com.formdev:flatlaf:3.2.1")
+	embed("com.formdev:flatlaf-intellij-themes:3.2.1")
+	implementation("com.formdev:flatlaf:3.2.1")
+	implementation("com.formdev:flatlaf-intellij-themes:3.2.1")
 }
 
 java {
