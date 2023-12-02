@@ -6,9 +6,7 @@ import hummel.symbols_types.Type
 
 class Set(private var id: Id, var expr: Expression) : Statement() {
 	init {
-		if (check(id.type!!, expr.type!!) == null) {
-			error("type error")
-		}
+		check(id.type!!, expr.type!!) ?: error("type error")
 	}
 
 	private fun check(type1: Type?, type2: Type?): Type? {

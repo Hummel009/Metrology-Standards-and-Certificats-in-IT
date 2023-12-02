@@ -256,21 +256,21 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 	}
 
 	private fun assign(): Statement? {
-		val statement: Statement
+		var statement: Statement? = null
 		val t = look
 		match(Tag.ID.code)
 		val id = (top ?: return null).get(t)
 		if ((look ?: return null).tag == '='.code) {
 			move()
 			val ex = pBool()
-			if (id == null) {
-				val type = (ex ?: return null).type
-				val newId = Id((t as Word?) ?: return null, type)
-				(top ?: return null).put(t ?: return null, newId)
-				used += (type ?: return null).width
+			id?.let {
+				statement = Set(it, ex ?: return@assign null)
+			} ?: run {
+				val type = (ex ?: return@assign null).type
+				val newId = Id((t as Word?) ?: return@assign null, type)
+				(top ?: return@assign null).put(t ?: return@assign null, newId)
+				used += (type ?: return@assign null).width
 				statement = Set(newId, ex)
-			} else {
-				statement = Set(id, ex ?: return null)
 			}
 			jilbe.operatorAmount++
 			match(Tag.OPERATOR_END.code)
@@ -397,11 +397,11 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 			Tag.ID.code -> {
 				run {
 					val id = (top ?: return@run).get(look)
-					if (id == null) {
-						error(look.toString() + " undeclared")
-					} else {
+					id?.let {
 						move()
-						return if ((look ?: return@run).tag != '['.code) id else offset(id)
+						return@factor if ((look ?: return@run).tag != '['.code) it else offset(it)
+					} ?: run {
+						error(look.toString() + " undeclared")
 					}
 				}
 				run { error("syntax error") }
@@ -420,26 +420,26 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 		var t1: Expression
 		var t2: Expression
 		var loc: Expression
-		var type = id.type
+		val type = id.type
 		match('['.code)
 		i = pBool()
 		match(']'.code)
-		if (type != null) {
-			type = (type as Array).type
-			w = Constant(type.width)
-			t1 = Arithmetic(Token('*'.code), i ?: return null, w)
+		type?.let {
+			val shadType = (it as Array).type
+			w = Constant(shadType.width)
+			t1 = Arithmetic(Token('*'.code), i ?: return@offset null, w)
 			loc = t1
-			while ((look ?: return null).tag == '['.code) {
+			while ((look ?: return@offset null).tag == '['.code) {
 				match('['.code)
 				i = pBool() //index
 				match(']'.code)
-				w = Constant(type.width)
-				t1 = Arithmetic(Token('*'.code), i ?: return null, w)
+				w = Constant(shadType.width)
+				t1 = Arithmetic(Token('*'.code), i ?: return@offset null, w)
 				t2 = Arithmetic(Token('+'.code), loc, t1)
 				loc = t2
 			}
-			return Access(id, loc, type)
-		} else {
+			return@offset Access(id, loc, shadType)
+		} ?: run {
 			error("type error")
 		}
 		return null

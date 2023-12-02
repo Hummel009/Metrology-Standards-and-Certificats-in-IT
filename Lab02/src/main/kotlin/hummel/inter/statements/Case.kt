@@ -14,13 +14,13 @@ class Case(var expr: Expression, var state: Statement?) : Statement() {
 			whens[i].gen(0, nextlabel)
 			nextlabel = (whens[i] as When).nextL
 		}
-		if (state != null) {
+		state?.let {
 			whens[0].gen(0, nextlabel)
 			nextlabel = (whens[0] as When).nextL
 			emitLabel(nextlabel)
 			emit("ELSE NOT goto L$a")
-			(state ?: return).gen(0, a)
-		} else {
+			it.gen(0, a)
+		} ?: run {
 			(whens[0] as When).gen2(0, nextlabel, a)
 		}
 	}
