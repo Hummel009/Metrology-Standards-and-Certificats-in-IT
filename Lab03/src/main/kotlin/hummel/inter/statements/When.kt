@@ -12,6 +12,7 @@ class When(var expr: Expression, private val state: Statement) : Statement() {
 		state.gen(0, nextL)
 	}
 
+	@Suppress("UNUSED_PARAMETER", "unused")
 	fun gen2(b: Int, a: Int, c: Int) {
 		emitLabel(a)
 		emit("WHEN NOT $expr goto L$c")

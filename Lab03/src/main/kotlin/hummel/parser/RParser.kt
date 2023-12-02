@@ -262,7 +262,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 	}
 
 	private fun assign(): Statement? {
-		val statement: Statement
+		var statement: Statement? = null
 		val t = look
 		match(Tag.ID.code)
 		val id = (top ?: return null).get(t)
@@ -272,18 +272,18 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 			metrics.groupTag = ChepinGroups.M
 
 			val ex = pBool()
-			if (id == null) {
-				val type = (ex ?: return null).type
-				val newId = Id((t as Word?) ?: return null, type)
-				(top ?: return null).put(t ?: return null, newId)
-				used += (type ?: return null).width
+			id?.let {
+				metrics.setIndex(it, temp)
+				statement = Set(it, ex ?: return@assign null)
+			} ?: run {
+				val type = (ex ?: return@assign null).type
+				val newId = Id((t as Word?) ?: return@assign null, type)
+				(top ?: return@assign null).put(t ?: return@assign null, newId)
+				used += (type ?: return@assign null).width
 				statement = Set(newId, ex)
 				metrics.setIndex(newId, ChepinGroups.T)
 				metrics.tryAddToPBuffer(newId)
 				metrics.isP = false
-			} else {
-				metrics.setIndex(id, temp)
-				statement = Set(id, ex ?: return null)
 			}
 			match(Tag.OPERATOR_END.code)
 			return statement
@@ -416,15 +416,15 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 			Tag.ID.code -> {
 				run {
 					val id = (top ?: return@run).get(look)
-					if (id == null) {
-						error(look.toString() + " undeclared")
-					} else {
+					id?.let {
 						move()
-						return if ((look ?: return@run).tag != '['.code) {
-							metrics.setIndex(id, metrics.groupTag)
-							metrics.tryAddToPBuffer(id)
+						return@factor if ((look ?: return@run).tag != '['.code) {
+							metrics.setIndex(it, metrics.groupTag)
+							metrics.tryAddToPBuffer(it)
 							id
-						} else offset(id)
+						} else offset(it)
+					} ?: run {
+						error(look.toString() + " undeclared")
 					}
 				}
 				run { error("syntax error") }
@@ -443,26 +443,26 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 		var t1: Expression
 		var t2: Expression
 		var loc: Expression
-		var type = id.type
+		val type = id.type
 		match('['.code)
 		i = pBool()
 		match(']'.code)
-		if (type != null) {
-			type = (type as Array).type
-			w = Constant(type.width)
-			t1 = Arithmetic(Token('*'.code), i ?: return null, w)
+		type?.let {
+			val shadType = (type as Array).type
+			w = Constant(shadType.width)
+			t1 = Arithmetic(Token('*'.code), i ?: return@offset null, w)
 			loc = t1
-			while ((look ?: return null).tag == '['.code) {
+			while ((look ?: return@offset null).tag == '['.code) {
 				match('['.code)
 				i = pBool() //index
 				match(']'.code)
-				w = Constant(type.width)
-				t1 = Arithmetic(Token('*'.code), i ?: return null, w)
+				w = Constant(shadType.width)
+				t1 = Arithmetic(Token('*'.code), i ?: return@offset null, w)
 				t2 = Arithmetic(Token('+'.code), loc, t1)
 				loc = t2
 			}
-			return Access(id, loc, type)
-		} else {
+			return@offset Access(id, loc, shadType)
+		} ?: run {
 			error("type error")
 		}
 		return null

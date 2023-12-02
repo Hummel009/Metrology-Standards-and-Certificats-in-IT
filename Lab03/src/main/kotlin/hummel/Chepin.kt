@@ -29,16 +29,6 @@ class Chepin {
 		}
 	}
 
-	fun printIOMetrics(): String {
-		val st = StringBuilder()
-		for ((id, value) in ids) {
-			if (pBuffer.contains(id)) {
-				st.appendLine("\$: $id -> $value")
-			}
-		}
-		return st.toString()
-	}
-
 	fun tryAddToPBuffer(id: Id): Boolean {
 		return if (isP) {
 			pBuffer.add(id)
@@ -59,7 +49,11 @@ class Chepin {
 	}
 
 	private fun incSpan(id: Id) {
-		if (span.containsKey(id)) span[id] = (span[id] ?: return) + 1 else span[id] = 0
+		if (span.containsKey(id)) {
+			span[id] = (span[id] ?: return) + 1
+		} else {
+			span[id] = 0
+		}
 	}
 
 	fun getIds(): Iterable<Map.Entry<Id, ChepinGroups>> = ids.entries

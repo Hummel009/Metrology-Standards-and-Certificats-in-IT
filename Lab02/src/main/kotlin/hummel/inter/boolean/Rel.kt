@@ -8,7 +8,9 @@ import hummel.symbols_types.Type
 class Rel(token: Token, expr1: Expression, expr2: Expression) : Logical(token, expr1, expr2) {
 	init {
 		type = check(expr1.type!!, expr2.type!!)
-		type?.let { error("Type error") }
+		if (type == null) {
+			error("type error")
+		}
 	}
 
 	private fun check(t1: Type?, t2: Type?): Type? {

@@ -8,7 +8,9 @@ import hummel.symbols_types.Type
 open class Logical(token: Token, var expr1: Expression, var expr2: Expression) : Expression(token, null) {
 	init {
 		type = check(expr1.type!!, expr2.type!!)
-		type?.let { error("Type error") }
+		if (type == null) {
+			error("type error")
+		}
 	}
 
 	private fun check(t1: Type?, t2: Type?): Type? {
