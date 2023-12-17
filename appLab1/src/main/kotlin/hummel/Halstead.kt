@@ -100,7 +100,35 @@ class Halstead(private var inputPath: String, private var outputPath: String) {
 			operands.remove("ped")
 		}
 		val sb = StringBuilder()
-		sb.append("<style>\r\nbody {\r\n\tbackground: #666 \r\n}\r\ntable {\r\n\tborder-collapse: collapse;\r\n\twidth: 100%;\r\n\tmax-width: 800px;\r\n\tmargin: 0 auto;\r\n}\r\nth, td {\r\n\tpadding: 8px;\r\n\ttext-align: left;\r\n\tborder-bottom: 1px solid #ddd;\r\n}\r\nth {\r\n\tbackground-color: #bcbcbc;\r\n}\r\ntd {\r\n\tbackground: White;\r\n}\r\ntr:hover {\r\n\tbackground-color: #f5f5f5;\r\n}\r\n</style>\r\n")
+		sb.append(
+			"""
+				<style>
+					body {
+						background: #666;
+					}
+					table {
+						border-collapse: collapse;
+						width: 100%;
+						max-width: 800px;
+						margin: 0 auto;
+					}
+					th, td {
+						padding: 8px;
+						text-align: left;
+						border-bottom: 1px solid #ddd;
+					}
+					th {
+						background-color: #bcbcbc;
+					}
+					td {
+						background: White;
+					}
+					tr:hover {
+						background-color: #f5f5f5;
+					}
+				</style>
+			""".trimIndent()
+		)
 		sb.append("<table><tbody>\n")
 		sb.append("<tr><th>Number</th><th>Operator</th><th>How many</th></tr>\n")
 		var allOperators = 0
