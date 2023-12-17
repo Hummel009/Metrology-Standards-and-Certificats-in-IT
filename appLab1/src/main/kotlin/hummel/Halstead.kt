@@ -102,31 +102,31 @@ class Halstead(private var inputPath: String, private var outputPath: String) {
 		val sb = StringBuilder()
 		sb.append(
 			"""
-				<style>
-					body {
-						background: #666;
-					}
-					table {
-						border-collapse: collapse;
-						width: 100%;
-						max-width: 800px;
-						margin: 0 auto;
-					}
-					th, td {
-						padding: 8px;
-						text-align: left;
-						border-bottom: 1px solid #ddd;
-					}
-					th {
-						background-color: #bcbcbc;
-					}
-					td {
-						background: White;
-					}
-					tr:hover {
-						background-color: #f5f5f5;
-					}
-				</style>
+			<style>
+				body {
+					background: #666;
+				}
+				table {
+					border-collapse: collapse;
+					width: 100%;
+					max-width: 800px;
+					margin: 0 auto;
+				}
+				th, td {
+					padding: 8px;
+					text-align: left;
+					border-bottom: 1px solid #ddd;
+				}
+				th {
+					background-color: #bcbcbc;
+				}
+				td {
+					background: White;
+				}
+				tr:hover {
+					background-color: #f5f5f5;
+				}
+			</style>
 			""".trimIndent()
 		)
 		sb.append("<table><tbody>\n")
