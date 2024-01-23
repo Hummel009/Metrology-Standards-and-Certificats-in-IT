@@ -13,6 +13,7 @@ import hummel.symbols_types.Array
 import hummel.symbols_types.Env
 import hummel.symbols_types.Type
 
+private const val SYNTAX_ERROR: String = "syntax error"
 
 class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 	private var look: Token? = null
@@ -31,7 +32,7 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 		throw Exception("Near line " + Lexer.line + " " + look + ": " + msg)
 	}
 
-	private fun match(t: Int) = if (look?.tag == t) move() else error("syntax error")
+	private fun match(t: Int) = if (look?.tag == t) move() else error(SYNTAX_ERROR)
 
 	fun parse(print: Boolean) {
 		val s = block()
@@ -404,11 +405,11 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 						error(look.toString() + " undeclared")
 					}
 				}
-				run { error("syntax error") }
+				run { error(SYNTAX_ERROR) }
 			}
 
 			else -> {
-				error("syntax error")
+				error(SYNTAX_ERROR)
 			}
 		}
 		return null
