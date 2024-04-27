@@ -402,7 +402,7 @@ class RParser(private val lexer: Lexer, private val jilbe: Jilbe) {
 						move()
 						return@factor if ((look ?: return@run).tag != '['.code) it else offset(it)
 					} ?: run {
-						error(look.toString() + " undeclared")
+						error("$look undeclared")
 					}
 				}
 				run { error(SYNTAX_ERROR) }

@@ -425,7 +425,7 @@ class RParser(private val lexer: Lexer, private val metrics: Chepin) {
 							id
 						} else offset(it)
 					} ?: run {
-						error(look.toString() + " undeclared")
+						error("$look undeclared")
 					}
 				}
 				run { error(SYNTAX_ERROR) }

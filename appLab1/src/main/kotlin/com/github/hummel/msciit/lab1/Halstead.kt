@@ -146,7 +146,7 @@ class Halstead(private var inputPath: String, private var outputPath: String) {
 			}
 		}
 		sb.append("<tr><th>${--numOperators}</th><td></td><th>$allOperators</th></tr>\n")
-		sb.append("</table></tbody>\n")
+		sb.append("</tbody></table>\n")
 		sb.append("<br>\n<table><tbody>\n")
 		sb.append("<tr><th>Number</th><th>Operand</th><th>How many</th></tr>\n")
 
@@ -158,7 +158,7 @@ class Halstead(private var inputPath: String, private var outputPath: String) {
 			allOperands += value
 		}
 		sb.append("<tr><th>${--numOperands}</th><td></td><th>$allOperands</th></tr>\n")
-		sb.append("</table></tbody>\n")
+		sb.append("</tbody></table>\n")
 		val num = numOperands + numOperators
 		val all = allOperands + allOperators
 		sb.append("<br>\n<table><tbody>\n")

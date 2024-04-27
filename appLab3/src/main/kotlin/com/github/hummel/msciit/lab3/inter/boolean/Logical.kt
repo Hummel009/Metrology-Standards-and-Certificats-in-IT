@@ -13,7 +13,8 @@ open class Logical(token: Token, var expr1: Expression, var expr2: Expression) :
 		}
 	}
 
-	private fun check(t1: Type?, t2: Type?): Type? = if (t1 == Type.BOOLEAN && t2 == Type.BOOLEAN) Type.BOOLEAN else null
+	private fun check(t1: Type?, t2: Type?): Type? =
+		if (t1 == Type.BOOLEAN && t2 == Type.BOOLEAN) Type.BOOLEAN else null
 
 	override fun gen(): Expression {
 		val f = newLabel()

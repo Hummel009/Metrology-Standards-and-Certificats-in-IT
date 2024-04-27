@@ -13,7 +13,8 @@ class Rel(token: Token, expr1: Expression, expr2: Expression) : Logical(token, e
 		}
 	}
 
-	private fun check(t1: Type?, t2: Type?): Type? = if (t1 is Array || t2 is Array) null else if (isNumeric(t1) && isNumeric(t2)) Type.BOOLEAN else null
+	private fun check(t1: Type?, t2: Type?): Type? =
+		if (t1 is Array || t2 is Array) null else if (isNumeric(t1) && isNumeric(t2)) Type.BOOLEAN else null
 
 	private fun isNumeric(p: Type?): Boolean = p == Type.CHAR || p == Type.INT || p == Type.FLOAT
 
