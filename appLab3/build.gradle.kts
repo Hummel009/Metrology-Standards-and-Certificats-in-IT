@@ -12,7 +12,7 @@ version = LocalDate.now().format(DateTimeFormatter.ofPattern("yy.MM.dd"))
 val embed: Configuration by configurations.creating
 
 dependencies {
-	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+	embed("org.jetbrains.kotlin:kotlin-stdlib:1.9.24")
 	embed("com.formdev:flatlaf:3.4.1")
 	embed("com.formdev:flatlaf-intellij-themes:3.4.1")
 	implementation("com.formdev:flatlaf:3.4.1")
