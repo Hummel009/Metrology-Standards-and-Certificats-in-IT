@@ -30,6 +30,10 @@
 Метрика Чепина (Chepin Metrics) для кода на Ruby. Программа должна обладать графическим интерфейсом. Метрика выводится в
 html-файл и открывается в браузере.
 
+### Приложения
+
+В папке docs лежат образцы кода на Ruby, которые нужно парсить в лабах.
+
 <!----------------------------------------------------------------------------->
 
 [code_smells_badge]: https://sonarcloud.io/api/project_badges/measure?project=Hummel009_Metrology-Standards-and-Certificats-in-IT&metric=code_smells
