@@ -145,6 +145,6 @@ class Lexer(file: String) {
 	}
 
 	companion object {
-		var line = 1
+		var line: Int = 1
 	}
 }

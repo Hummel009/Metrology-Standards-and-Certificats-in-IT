@@ -9,9 +9,9 @@ enum class ChepinGroups {
 class Chepin {
 	private val ids = HashMap<Id, ChepinGroups>()
 	private val span = HashMap<Id, Int>()
-	var groupTag = ChepinGroups.NULL
-	val pBuffer = HashSet<Id>()
-	var isP = false
+	var groupTag: ChepinGroups = ChepinGroups.NULL
+	val pBuffer: MutableSet<Id> = hashSetOf()
+	var isP: Boolean = false
 
 	fun getQ(isIO: Boolean = false): Float {
 		val p = countInDict(ChepinGroups.P, isIO)
