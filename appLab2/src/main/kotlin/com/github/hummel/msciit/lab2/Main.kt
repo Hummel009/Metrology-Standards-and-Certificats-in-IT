@@ -1,7 +1,7 @@
 package com.github.hummel.msciit.lab2
 
 import com.formdev.flatlaf.FlatLightLaf
-import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatGitHubDarkIJTheme
+import com.formdev.flatlaf.intellijthemes.materialthemeuilite.FlatMTGitHubDarkIJTheme
 import com.github.hummel.msciit.lab2.lexer.Lexer
 import com.github.hummel.msciit.lab2.parser.RParser
 import java.awt.BorderLayout
@@ -14,7 +14,7 @@ fun main() {
 	FlatLightLaf.setup()
 	EventQueue.invokeLater {
 		try {
-			UIManager.setLookAndFeel(FlatGitHubDarkIJTheme())
+			UIManager.setLookAndFeel(FlatMTGitHubDarkIJTheme())
 			val frame = GUI()
 			frame.isVisible = true
 		} catch (e: Exception) {
